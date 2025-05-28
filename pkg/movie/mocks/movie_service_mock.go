@@ -48,6 +48,21 @@ func (mr *MockMovieServiceMockRecorder) AddMovie() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddMovie", reflect.TypeOf((*MockMovieService)(nil).AddMovie))
 }
 
+// GetFilteredMovies mocks base method.
+func (m *MockMovieService) GetFilteredMovies(searchType, searchText string) ([]model.Movie, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFilteredMovies", searchType, searchText)
+	ret0, _ := ret[0].([]model.Movie)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFilteredMovies indicates an expected call of GetFilteredMovies.
+func (mr *MockMovieServiceMockRecorder) GetFilteredMovies(searchType, searchText interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFilteredMovies", reflect.TypeOf((*MockMovieService)(nil).GetFilteredMovies), searchType, searchText)
+}
+
 // GetMovies mocks base method.
 func (m *MockMovieService) GetMovies() ([]model.Movie, error) {
 	m.ctrl.T.Helper()

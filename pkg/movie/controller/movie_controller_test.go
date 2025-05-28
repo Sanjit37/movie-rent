@@ -84,3 +84,49 @@ func (suite *MovieControllerTestSuite) Test_GetMovieToDBSuccessfully() {
 	suite.Equal(http.StatusOK, suite.recorder.Code)
 	suite.Equal(expectedMovies, suite.recorder.Body.String())
 }
+
+func (suite *MovieControllerTestSuite) Test_GetFilteredMovies_returnBadRequestWhenSearchTypeIsEmpty() {
+	suite.context.Request = httptest.NewRequest(http.MethodGet, "/movies/filter?searchType=&searchText=action", nil)
+
+	suite.testController.GetFilteredMovies(suite.context)
+
+	suite.Equal(http.StatusBadRequest, suite.recorder.Code)
+}
+
+func (suite *MovieControllerTestSuite) Test_GetFilteredMovies_ReturnBadRequestWhenSearchTextIsEmpty() {
+	suite.context.Request = httptest.NewRequest(http.MethodGet, "/movies/filter?searchType=genre&searchText=", nil)
+
+	suite.testController.GetFilteredMovies(suite.context)
+
+	suite.Equal(http.StatusBadRequest, suite.recorder.Code)
+}
+
+func (suite *MovieControllerTestSuite) Test_GetFilteredMovies_ReturnErrorServiceCallFailed() {
+	suite.context.Request = httptest.NewRequest(http.MethodGet, "/movies/filter?searchType=genre&searchText=action", nil)
+	suite.mockMovieService.EXPECT().GetFilteredMovies("genre", "action").Return(nil, errors.New("error")).Times(1)
+
+	suite.testController.GetFilteredMovies(suite.context)
+
+	suite.Equal(http.StatusInternalServerError, suite.recorder.Code)
+}
+
+func (suite *MovieControllerTestSuite) Test_GetFilteredMovies_ShouldReturnFilteredMovies() {
+	movies := []model.Movie{
+		{
+			Id:          1,
+			Title:       "Hero",
+			Year:        1990,
+			Genre:       "Action",
+			Description: "Action movie",
+			ImdbCode:    "1234",
+		},
+	}
+	suite.context.Request = httptest.NewRequest(http.MethodGet, "/movies/filter?searchType=genre&searchText=action", nil)
+	suite.mockMovieService.EXPECT().GetFilteredMovies("genre", "action").Return(movies, nil).Times(1)
+
+	suite.testController.GetFilteredMovies(suite.context)
+
+	expectedMovies := `[{"id":1,"title":"Hero","releaseYear":1990,"genre":"Action","description":"Action movie","imdbCode":"1234"}]`
+	suite.Equal(http.StatusOK, suite.recorder.Code)
+	suite.Equal(expectedMovies, suite.recorder.Body.String())
+}

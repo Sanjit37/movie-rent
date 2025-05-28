@@ -109,3 +109,56 @@ func (suite *MovieServiceTestSuite) Test_ShouldReturnMovies() {
 	suite.Nil(err)
 	suite.Equal(expectedMovies, movies)
 }
+
+func (suite *MovieServiceTestSuite) Test_GetFilteredMovies_ReturnErrorFetchToFailedMovies() {
+	searchType := "searchType"
+	searchText := "searchText"
+	suite.mockRepository.EXPECT().FetchMoviesBySearchText(searchType, searchText).Return([]model.Movie{}, fmt.Errorf("error"))
+
+	movies, err := suite.movieService.GetFilteredMovies(searchType, searchText)
+
+	suite.NotNil(err)
+	suite.Equal(0, len(movies))
+}
+
+func (suite *MovieServiceTestSuite) Test_GetFilteredMovies_ShouldReturnFilterMoviesByYear() {
+	searchType := "year"
+	searchText := "1990"
+	expectedMovies := []model.Movie{
+		{
+			Id:          1,
+			Title:       "Hero",
+			Year:        1990,
+			Genre:       "Action",
+			Description: "Action movie",
+			ImdbCode:    "1234",
+		},
+	}
+	suite.mockRepository.EXPECT().FetchMoviesByYear(1990).Return(expectedMovies, nil).Times(1)
+
+	movies, err := suite.movieService.GetFilteredMovies(searchType, searchText)
+
+	suite.Nil(err)
+	suite.Equal(expectedMovies, movies)
+}
+
+func (suite *MovieServiceTestSuite) Test_GetFilteredMovies_ShouldReturnFilterMoviesBySearchText() {
+	searchType := "Genre"
+	searchText := "Action"
+	expectedMovies := []model.Movie{
+		{
+			Id:          1,
+			Title:       "Hero",
+			Year:        1990,
+			Genre:       "Action",
+			Description: "Action movie",
+			ImdbCode:    "1234",
+		},
+	}
+	suite.mockRepository.EXPECT().FetchMoviesBySearchText(searchType, searchText).Return(expectedMovies, nil).Times(1)
+
+	movies, err := suite.movieService.GetFilteredMovies(searchType, searchText)
+
+	suite.Nil(err)
+	suite.Equal(expectedMovies, movies)
+}

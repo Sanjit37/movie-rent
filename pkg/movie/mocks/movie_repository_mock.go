@@ -34,6 +34,36 @@ func (m *MockMovieRepository) EXPECT() *MockMovieRepositoryMockRecorder {
 	return m.recorder
 }
 
+// FetchMoviesBySearchText mocks base method.
+func (m *MockMovieRepository) FetchMoviesBySearchText(searchType, searchText string) ([]model.Movie, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchMoviesBySearchText", searchType, searchText)
+	ret0, _ := ret[0].([]model.Movie)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchMoviesBySearchText indicates an expected call of FetchMoviesBySearchText.
+func (mr *MockMovieRepositoryMockRecorder) FetchMoviesBySearchText(searchType, searchText interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchMoviesBySearchText", reflect.TypeOf((*MockMovieRepository)(nil).FetchMoviesBySearchText), searchType, searchText)
+}
+
+// FetchMoviesByYear mocks base method.
+func (m *MockMovieRepository) FetchMoviesByYear(year int) ([]model.Movie, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchMoviesByYear", year)
+	ret0, _ := ret[0].([]model.Movie)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchMoviesByYear indicates an expected call of FetchMoviesByYear.
+func (mr *MockMovieRepositoryMockRecorder) FetchMoviesByYear(year interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchMoviesByYear", reflect.TypeOf((*MockMovieRepository)(nil).FetchMoviesByYear), year)
+}
+
 // GetMovies mocks base method.
 func (m *MockMovieRepository) GetMovies() ([]model.Movie, error) {
 	m.ctrl.T.Helper()

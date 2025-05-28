@@ -18,7 +18,7 @@
             <column name="release_year" type="int">-->
                 <constraints nullable="false"/>
             </column>
-            <column name="gener" type="VARCHAR">-->
+            <column name="genre" type="VARCHAR">-->
                 <constraints nullable="false"/>
             </column>
             <column name="imdb_code" type="VARCHAR">-->
