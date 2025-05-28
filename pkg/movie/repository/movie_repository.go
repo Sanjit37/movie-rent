@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	InsertMovieSQL     = `INSERT INTO movies(id, title, description, genre, release_year, imdb_code) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
-	SelectMovies       = `SELECT id, title, release_year, genre, description, imdb_code FROM movies`
-	SelectMoviesByYear = `SELECT id, title, release_year, genre, description, imdb_code FROM movies where release_year = $1`
+	InsertMovieSQL       = `INSERT INTO movies(id, title, description, genre, release_year, imdb_code) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	SelectMovies         = `SELECT id, title, release_year, genre, description, imdb_code FROM movies`
+	SelectMoviesByYear   = `SELECT id, title, release_year, genre, description, imdb_code FROM movies where release_year = $1`
+	InsertCartDetailsSQL = `INSERT INTO movies(user_id, movie_id, movie_name, release_year) VALUES ($1, $2, $3, $4) RETURNING id`
 )
 
 type MovieRepository interface {
@@ -19,6 +20,7 @@ type MovieRepository interface {
 	GetMovies() ([]model.Movie, error)
 	FetchMoviesByYear(year int) ([]model.Movie, error)
 	FetchMoviesBySearchText(searchType string, searchText string) ([]model.Movie, error)
+	AddMovieToCart(cart model.CartRequest) error
 }
 
 type movieRepo struct {
@@ -112,4 +114,15 @@ func (m movieRepo) FetchMoviesBySearchText(searchType string, searchText string)
 
 	fmt.Println("movies fetched. Total movies:", len(movies))
 	return movies, nil
+}
+
+func (m movieRepo) AddMovieToCart(cart model.CartRequest) error {
+	id := cart.MovieId
+	err := m.db.QueryRow(InsertCartDetailsSQL, cart.UserId, cart.MovieId, cart.MovieName, cart.ReleaseYear).Scan(&id)
+
+	if err != nil {
+		return fmt.Errorf("failed to insert cart details: %w", err)
+	}
+	fmt.Println("Successfully inserted cart details. Id:", id)
+	return nil
 }

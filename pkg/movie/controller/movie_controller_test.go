@@ -9,6 +9,7 @@ import (
 	"movie-rent/pkg/movie/model"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -129,4 +130,45 @@ func (suite *MovieControllerTestSuite) Test_GetFilteredMovies_ShouldReturnFilter
 	expectedMovies := `[{"id":1,"title":"Hero","releaseYear":1990,"genre":"Action","description":"Action movie","imdbCode":"1234"}]`
 	suite.Equal(http.StatusOK, suite.recorder.Code)
 	suite.Equal(expectedMovies, suite.recorder.Body.String())
+}
+
+func (suite *MovieControllerTestSuite) Test_AddMovieToCart_ShouldReturnBadRequestWhenRequiredFieldIsEmpty() {
+	invalidRequestBody := `{"userId":1001,"movieId":4563,"movieName":"Hero"}`
+	suite.context.Request = httptest.NewRequest(http.MethodPost, "/addMovieToCart", strings.NewReader(invalidRequestBody))
+
+	suite.testController.AddMovieToCart(suite.context)
+
+	suite.Equal(http.StatusBadRequest, suite.recorder.Code)
+}
+
+func (suite *MovieControllerTestSuite) Test_AddMovieToCart_ShouldReturnInternalServerErrorWhenServiceCallFailed() {
+	request := model.CartRequest{
+		UserId:      1001,
+		MovieId:     4563,
+		MovieName:   "Hero",
+		ReleaseYear: 1990,
+	}
+	requestBody := `{"userId":1001,"movieId":4563,"movieName":"Hero","releaseYear":1990}`
+	suite.context.Request = httptest.NewRequest(http.MethodPost, "/addMovieToCart", strings.NewReader(requestBody))
+	suite.mockMovieService.EXPECT().AddMovieToCart(request).Return(errors.New("error")).Times(1)
+
+	suite.testController.AddMovieToCart(suite.context)
+
+	suite.Equal(http.StatusInternalServerError, suite.recorder.Code)
+}
+
+func (suite *MovieControllerTestSuite) Test_AddMovieToCart_ShouldSuccessfullyAddMovieToCart() {
+	request := model.CartRequest{
+		UserId:      1001,
+		MovieId:     4563,
+		MovieName:   "Hero",
+		ReleaseYear: 1990,
+	}
+	requestBody := `{"userId":1001,"movieId":4563,"movieName":"Hero","releaseYear":1990}`
+	suite.context.Request = httptest.NewRequest(http.MethodPost, "/addMovieToCart", strings.NewReader(requestBody))
+	suite.mockMovieService.EXPECT().AddMovieToCart(request).Return(nil).Times(1)
+
+	suite.testController.AddMovieToCart(suite.context)
+
+	suite.Equal(http.StatusOK, suite.recorder.Code)
 }

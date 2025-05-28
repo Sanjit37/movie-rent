@@ -31,4 +31,27 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="002-create-movie_carts-table" author="Sanjit">
+        <createTable tableName="movie_carts">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movie_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movie_name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="release_year" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="movie_carts"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

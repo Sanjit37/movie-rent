@@ -162,3 +162,31 @@ func (suite *MovieServiceTestSuite) Test_GetFilteredMovies_ShouldReturnFilterMov
 	suite.Nil(err)
 	suite.Equal(expectedMovies, movies)
 }
+
+func (suite *MovieServiceTestSuite) Test_AddMovieToCart_ShouldReturnErrorAddMovieToCartFailed() {
+	request := model.CartRequest{
+		UserId:      1001,
+		MovieId:     4563,
+		MovieName:   "Hero",
+		ReleaseYear: 1990,
+	}
+	suite.mockRepository.EXPECT().AddMovieToCart(request).Return(fmt.Errorf("error"))
+
+	err := suite.movieService.AddMovieToCart(request)
+
+	suite.NotNil(err)
+}
+
+func (suite *MovieServiceTestSuite) Test_AddMovieToCart_ShouldSuccessfullyAddMovieToCart() {
+	request := model.CartRequest{
+		UserId:      1001,
+		MovieId:     4563,
+		MovieName:   "Hero",
+		ReleaseYear: 1990,
+	}
+	suite.mockRepository.EXPECT().AddMovieToCart(request).Return(nil).Times(1)
+
+	err := suite.movieService.AddMovieToCart(request)
+
+	suite.Nil(err)
+}

@@ -15,6 +15,7 @@ type MovieService interface {
 	AddMovie() error
 	GetMovies() ([]model.Movie, error)
 	GetFilteredMovies(searchType string, searchText string) ([]model.Movie, error)
+	AddMovieToCart(cart model.CartRequest) (id error)
 }
 
 type movieService struct {
@@ -69,4 +70,13 @@ func (m movieService) GetFilteredMovies(searchType string, searchText string) ([
 	}
 
 	return movies, err
+}
+
+func (m movieService) AddMovieToCart(cart model.CartRequest) (id error) {
+	err := m.repository.AddMovieToCart(cart)
+	if err != nil {
+		fmt.Println("failed to add to cart: %w", err.Error())
+		return err
+	}
+	return nil
 }

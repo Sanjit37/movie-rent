@@ -27,6 +27,7 @@ func main() {
 	route.GET("/movies", movieController.GetMovies)
 	route.GET("/movies/filter", movieController.GetFilteredMovies)
 	route.POST("/movie", movieController.AddMovie)
+	route.POST("/addMovieToCart", movieController.AddMovieToCart)
 
 	route.Run(":8080")
 

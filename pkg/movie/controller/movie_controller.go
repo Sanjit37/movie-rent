@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"movie-rent/pkg/movie/model"
 	"movie-rent/pkg/movie/service"
 	"net/http"
 )
@@ -14,6 +15,7 @@ type MovieController struct {
 func NewMovieController(service service.MovieService) MovieController {
 	return MovieController{service: service}
 }
+
 func (m *MovieController) AddMovie(ctx *gin.Context) {
 	err := m.service.AddMovie()
 	if err != nil {
@@ -49,4 +51,21 @@ func (m *MovieController) GetFilteredMovies(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 	ctx.JSON(http.StatusOK, movies)
+}
+
+func (m *MovieController) AddMovieToCart(ctx *gin.Context) {
+	var cart model.CartRequest
+	err := ctx.ShouldBindJSON(&cart)
+	if err != nil {
+		fmt.Println("Invalid request body", err.Error())
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	err = m.service.AddMovieToCart(cart)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, nil)
 }
