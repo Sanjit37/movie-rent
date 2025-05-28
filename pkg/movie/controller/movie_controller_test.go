@@ -70,7 +70,7 @@ func (suite *MovieControllerTestSuite) Test_GetMovieToDBSuccessfully() {
 			Id:          1,
 			Title:       "Hero",
 			Year:        1990,
-			Gener:       "Action",
+			Genre:       "Action",
 			Description: "Action movie",
 			ImdbCode:    "1234",
 		},
@@ -80,7 +80,7 @@ func (suite *MovieControllerTestSuite) Test_GetMovieToDBSuccessfully() {
 
 	suite.testController.GetMovies(suite.context)
 
-	expectedMovies := `[{"id":1,"title":"Hero","releaseYear":1990,"gener":"Action","description":"Action movie","imdbCode":"1234"}]`
+	expectedMovies := `[{"id":1,"title":"Hero","releaseYear":1990,"genre":"Action","description":"Action movie","imdbCode":"1234"}]`
 	suite.Equal(http.StatusOK, suite.recorder.Code)
 	suite.Equal(expectedMovies, suite.recorder.Body.String())
 }

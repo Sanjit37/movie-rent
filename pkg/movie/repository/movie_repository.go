@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	InsertMovieSQL = `INSERT INTO movies(id, title, description, gener, release_year, imdb_code) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
-	SelectMovies   = `SELECT id, title, release_year, gener, description, imdb_code FROM movies`
+	InsertMovieSQL = `INSERT INTO movies(id, title, description, genre, release_year, imdb_code) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
+	SelectMovies   = `SELECT id, title, release_year, genre, description, imdb_code FROM movies`
 )
 
 type MovieRepository interface {
@@ -28,7 +28,7 @@ func NewMovieRepository(db *sqlx.DB) MovieRepository {
 
 func (m movieRepo) Save(movie model.Movie) error {
 	id := movie.Id
-	err := m.db.QueryRow(InsertMovieSQL, movie.Id, movie.Title, movie.Description, movie.Gener, movie.Year, movie.ImdbCode).Scan(&id)
+	err := m.db.QueryRow(InsertMovieSQL, movie.Id, movie.Title, movie.Description, movie.Genre, movie.Year, movie.ImdbCode).Scan(&id)
 
 	if err != nil {
 		return fmt.Errorf("failed to insert movie: %w", err)
@@ -57,7 +57,7 @@ func (m movieRepo) GetMovies() ([]model.Movie, error) {
 	var movies []model.Movie
 	for rows.Next() {
 		var movie model.Movie
-		err := rows.Scan(&movie.Id, &movie.Title, &movie.Year, &movie.Gener, &movie.Description, &movie.ImdbCode)
+		err := rows.Scan(&movie.Id, &movie.Title, &movie.Year, &movie.Genre, &movie.Description, &movie.ImdbCode)
 		if err != nil {
 			log.Println("Error scanning row:", err)
 		}
