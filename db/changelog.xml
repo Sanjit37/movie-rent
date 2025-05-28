@@ -1,0 +1,34 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="001-create-movies-table" author="Sanjit">
+        <createTable tableName="movies">
+            <column name="id" type="int">-->
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(50)">-->
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(200)">-->
+                <constraints nullable="false"/>
+            </column>
+            <column name="release_year" type="int">-->
+                <constraints nullable="false"/>
+            </column>
+            <column name="gener" type="VARCHAR">-->
+                <constraints nullable="false"/>
+            </column>
+            <column name="imdb_code" type="VARCHAR">-->
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="movies"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
