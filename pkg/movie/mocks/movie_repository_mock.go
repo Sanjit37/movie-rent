@@ -35,11 +35,12 @@ func (m *MockMovieRepository) EXPECT() *MockMovieRepositoryMockRecorder {
 }
 
 // AddMovieToCart mocks base method.
-func (m *MockMovieRepository) AddMovieToCart(cart model.CartRequest) error {
+func (m *MockMovieRepository) AddMovieToCart(cart model.CartRequest) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddMovieToCart", cart)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // AddMovieToCart indicates an expected call of AddMovieToCart.
@@ -76,6 +77,36 @@ func (m *MockMovieRepository) FetchMoviesByYear(year int) ([]model.Movie, error)
 func (mr *MockMovieRepositoryMockRecorder) FetchMoviesByYear(year interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchMoviesByYear", reflect.TypeOf((*MockMovieRepository)(nil).FetchMoviesByYear), year)
+}
+
+// GetCartList mocks base method.
+func (m *MockMovieRepository) GetCartList(userId int) ([]model.CartResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCartList", userId)
+	ret0, _ := ret[0].([]model.CartResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCartList indicates an expected call of GetCartList.
+func (mr *MockMovieRepositoryMockRecorder) GetCartList(userId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCartList", reflect.TypeOf((*MockMovieRepository)(nil).GetCartList), userId)
+}
+
+// GetMovieDetailsBy mocks base method.
+func (m *MockMovieRepository) GetMovieDetailsBy(movieId int) (model.Movie, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMovieDetailsBy", movieId)
+	ret0, _ := ret[0].(model.Movie)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMovieDetailsBy indicates an expected call of GetMovieDetailsBy.
+func (mr *MockMovieRepositoryMockRecorder) GetMovieDetailsBy(movieId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMovieDetailsBy", reflect.TypeOf((*MockMovieRepository)(nil).GetMovieDetailsBy), movieId)
 }
 
 // GetMovies mocks base method.

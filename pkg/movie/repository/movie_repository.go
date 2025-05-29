@@ -9,18 +9,22 @@ import (
 
 const (
 	InsertMovieSQL       = `INSERT INTO movies(id, title, description, genre, release_year, imdb_code) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
-	SelectMovies         = `SELECT id, title, release_year, genre, description, imdb_code FROM movies`
+	SelectMovies         = `SELECT * FROM movies`
 	SelectMoviesByYear   = `SELECT id, title, release_year, genre, description, imdb_code FROM movies where release_year = $1`
-	InsertCartDetailsSQL = `INSERT INTO movies(user_id, movie_id, movie_name, release_year) VALUES ($1, $2, $3, $4) RETURNING id`
+	InsertCartDetailsSQL = `INSERT INTO movie_carts(user_id, movie_id, movie_name, release_year) VALUES ($1, $2, $3, $4) RETURNING id`
+	SelectCartListSQL    = `SELECT * FROM movie_carts where user_id = $1`
+	SelectMovieByIdSQL   = `SELECT * FROM movies where id = $1`
 )
 
 type MovieRepository interface {
 	Save(movie model.Movie) error
 	SaveAll(movies []model.Movie) error
 	GetMovies() ([]model.Movie, error)
+	GetMovieDetailsBy(movieId int) (model.Movie, error)
 	FetchMoviesByYear(year int) ([]model.Movie, error)
 	FetchMoviesBySearchText(searchType string, searchText string) ([]model.Movie, error)
-	AddMovieToCart(cart model.CartRequest) error
+	AddMovieToCart(cart model.CartRequest) (int, error)
+	GetCartList(userId int) ([]model.CartResponse, error)
 }
 
 type movieRepo struct {
@@ -116,13 +120,52 @@ func (m movieRepo) FetchMoviesBySearchText(searchType string, searchText string)
 	return movies, nil
 }
 
-func (m movieRepo) AddMovieToCart(cart model.CartRequest) error {
+func (m movieRepo) AddMovieToCart(cart model.CartRequest) (int, error) {
 	id := cart.MovieId
 	err := m.db.QueryRow(InsertCartDetailsSQL, cart.UserId, cart.MovieId, cart.MovieName, cart.ReleaseYear).Scan(&id)
 
 	if err != nil {
-		return fmt.Errorf("failed to insert cart details: %w", err)
+		return 0, fmt.Errorf("failed to insert cart details: %w", err)
 	}
 	fmt.Println("Successfully inserted cart details. Id:", id)
-	return nil
+	return id, nil
+}
+
+func (m movieRepo) GetCartList(userId int) ([]model.CartResponse, error) {
+	rows, err := m.db.Query(SelectCartListSQL, userId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var cartList []model.CartResponse
+	for rows.Next() {
+		var c model.CartResponse
+		err := rows.Scan(&c.Id, &c.UserId, &c.MovieId, &c.MovieName, &c.ReleaseYear)
+		if err != nil {
+			log.Println("Error scanning row:", err)
+		}
+		cartList = append(cartList, c)
+	}
+
+	fmt.Println("Successfully fetched added movies", len(cartList))
+	return cartList, nil
+}
+
+func (m movieRepo) GetMovieDetailsBy(movieId int) (model.Movie, error) {
+	rows, err := m.db.Query(SelectMovieByIdSQL, movieId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var movie model.Movie
+	for rows.Next() {
+		var c model.CartResponse
+		err := rows.Scan(&c.Id, &c.UserId, &c.MovieId, &c.MovieName, &c.ReleaseYear)
+		if err != nil {
+			fmt.Println("Error scanning row:", err)
+		}
+	}
+	return movie, nil
 }

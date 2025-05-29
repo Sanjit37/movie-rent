@@ -6,6 +6,7 @@ import (
 	"movie-rent/pkg/movie/model"
 	"movie-rent/pkg/movie/service"
 	"net/http"
+	"strconv"
 )
 
 type MovieController struct {
@@ -55,17 +56,52 @@ func (m *MovieController) GetFilteredMovies(ctx *gin.Context) {
 
 func (m *MovieController) AddMovieToCart(ctx *gin.Context) {
 	var cart model.CartRequest
-	err := ctx.ShouldBindJSON(&cart)
-	if err != nil {
-		fmt.Println("Invalid request body", err.Error())
-		ctx.JSON(http.StatusBadRequest, err.Error())
+	bindErr := ctx.ShouldBindJSON(&cart)
+	if bindErr != nil {
+		fmt.Println("Invalid request body", bindErr.Error())
+		ctx.JSON(http.StatusBadRequest, bindErr.Error())
 		return
 	}
-	err = m.service.AddMovieToCart(cart)
+	id, err := m.service.AddMovieToCart(cart)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	ctx.JSON(http.StatusOK, nil)
+	ctx.JSON(http.StatusOK, id)
+}
+
+func (m *MovieController) GetCartList(ctx *gin.Context) {
+	var userId int
+	var err error
+	id := ctx.Param("userId")
+	userId, err = strconv.Atoi(id)
+	if id == "" || err != nil {
+		ctx.JSON(http.StatusBadRequest, "userId is empty")
+		return
+	}
+	res, err := m.service.GetCartList(userId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (m *MovieController) GetMovieDetailsBy(ctx *gin.Context) {
+	fmt.Println("Fetching movie by id")
+	id := ctx.Param("id")
+	movieId, err := strconv.Atoi(id)
+	if id == "" || err != nil {
+		ctx.JSON(http.StatusBadRequest, "Invalid id")
+		return
+	}
+
+	movie, serviceErr := m.service.GetMovieDetailsBy(movieId)
+	if serviceErr != nil {
+		ctx.JSON(http.StatusInternalServerError, serviceErr)
+		return
+	}
+	ctx.JSON(http.StatusOK, movie)
 }

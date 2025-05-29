@@ -14,8 +14,10 @@ import (
 type MovieService interface {
 	AddMovie() error
 	GetMovies() ([]model.Movie, error)
+	GetMovieDetailsBy(movieId int) (model.Movie, error)
 	GetFilteredMovies(searchType string, searchText string) ([]model.Movie, error)
-	AddMovieToCart(cart model.CartRequest) (id error)
+	AddMovieToCart(cart model.CartRequest) (int, error)
+	GetCartList(userId int) ([]model.CartResponse, error)
 }
 
 type movieService struct {
@@ -52,6 +54,16 @@ func (m movieService) GetMovies() ([]model.Movie, error) {
 	return movies, err
 }
 
+func (m movieService) GetMovieDetailsBy(movieId int) (model.Movie, error) {
+	movie, err := m.repository.GetMovieDetailsBy(movieId)
+	if err != nil {
+		fmt.Println("failed to find movies: %w", err.Error())
+		return model.Movie{}, err
+	}
+
+	return movie, err
+}
+
 func (m movieService) GetFilteredMovies(searchType string, searchText string) ([]model.Movie, error) {
 	var movies []model.Movie
 	var err error
@@ -72,11 +84,20 @@ func (m movieService) GetFilteredMovies(searchType string, searchText string) ([
 	return movies, err
 }
 
-func (m movieService) AddMovieToCart(cart model.CartRequest) (id error) {
-	err := m.repository.AddMovieToCart(cart)
+func (m movieService) AddMovieToCart(cart model.CartRequest) (int, error) {
+	id, err := m.repository.AddMovieToCart(cart)
 	if err != nil {
 		fmt.Println("failed to add to cart: %w", err.Error())
-		return err
+		return 0, err
 	}
-	return nil
+	return id, nil
+}
+
+func (m movieService) GetCartList(userId int) ([]model.CartResponse, error) {
+	res, err := m.repository.GetCartList(userId)
+	if err != nil {
+		fmt.Println("failed to add to cart: %w", err.Error())
+		return []model.CartResponse{}, err
+	}
+	return res, nil
 }

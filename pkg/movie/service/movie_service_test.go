@@ -170,11 +170,12 @@ func (suite *MovieServiceTestSuite) Test_AddMovieToCart_ShouldReturnErrorAddMovi
 		MovieName:   "Hero",
 		ReleaseYear: 1990,
 	}
-	suite.mockRepository.EXPECT().AddMovieToCart(request).Return(fmt.Errorf("error"))
+	suite.mockRepository.EXPECT().AddMovieToCart(request).Return(0, fmt.Errorf("error"))
 
-	err := suite.movieService.AddMovieToCart(request)
+	id, err := suite.movieService.AddMovieToCart(request)
 
 	suite.NotNil(err)
+	suite.Equal(0, id)
 }
 
 func (suite *MovieServiceTestSuite) Test_AddMovieToCart_ShouldSuccessfullyAddMovieToCart() {
@@ -184,9 +185,63 @@ func (suite *MovieServiceTestSuite) Test_AddMovieToCart_ShouldSuccessfullyAddMov
 		MovieName:   "Hero",
 		ReleaseYear: 1990,
 	}
-	suite.mockRepository.EXPECT().AddMovieToCart(request).Return(nil).Times(1)
+	suite.mockRepository.EXPECT().AddMovieToCart(request).Return(1, nil).Times(1)
 
-	err := suite.movieService.AddMovieToCart(request)
+	id, err := suite.movieService.AddMovieToCart(request)
 
 	suite.Nil(err)
+	suite.Equal(1, id)
+}
+
+func (suite *MovieServiceTestSuite) Test_GetCartList_ShouldReturnErrorWhenGetCartListFailed() {
+	userId := 1001
+	suite.mockRepository.EXPECT().GetCartList(userId).Return(nil, fmt.Errorf("error")).Times(1)
+
+	_, err := suite.movieService.GetCartList(userId)
+
+	suite.NotNil(err)
+}
+
+func (suite *MovieServiceTestSuite) Test_GetCartList_ShouldSuccessfullyFetchCartList() {
+	userId := 1001
+	response := []model.CartResponse{{
+		Id:          1,
+		UserId:      1001,
+		MovieId:     4563,
+		MovieName:   "Hero",
+		ReleaseYear: 1990,
+	}}
+	suite.mockRepository.EXPECT().GetCartList(userId).Return(response, nil).Times(1)
+
+	actualResponse, err := suite.movieService.GetCartList(userId)
+
+	suite.Nil(err)
+	suite.Equal(response, actualResponse)
+}
+
+func (suite *MovieServiceTestSuite) Test_GetMovieDetailsBy_ShouldReturnErrorWhenGetMovieDetailsByFailed() {
+	movieId := 1001
+	suite.mockRepository.EXPECT().GetMovieDetailsBy(movieId).Return(model.Movie{}, fmt.Errorf("error")).Times(1)
+
+	_, err := suite.movieService.GetMovieDetailsBy(movieId)
+
+	suite.NotNil(err)
+}
+
+func (suite *MovieServiceTestSuite) Test_GetMovieDetailsBy_ShouldSuccessfullyMovieById() {
+	movieId := 1001
+	expectedMovies := model.Movie{
+		Id:          1,
+		Title:       "Hero",
+		Year:        1990,
+		Genre:       "Action",
+		Description: "Action movie",
+		ImdbCode:    "1234",
+	}
+	suite.mockRepository.EXPECT().GetMovieDetailsBy(movieId).Return(expectedMovies, nil).Times(1)
+
+	actualResponse, err := suite.movieService.GetMovieDetailsBy(movieId)
+
+	suite.Nil(err)
+	suite.Equal(expectedMovies, actualResponse)
 }
