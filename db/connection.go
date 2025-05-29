@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"log"
+	"movie-rent/config"
 )
 
 type Database interface {
@@ -16,16 +17,8 @@ func NewDatabase() Database {
 	return database{}
 }
 
-var (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "Sanjit"
-	dbname   = "movie_db"
-)
-
 func (d database) Instance() *sqlx.DB {
-	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	connStr := config.LoadDBConfig().GetDSN()
 	db, err := sqlx.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)

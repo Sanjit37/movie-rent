@@ -3,7 +3,7 @@ package rapid
 import (
 	"encoding/json"
 	"fmt"
-	"movie-rent/config"
+	"movie-rent/constants"
 	"movie-rent/pkg/movie/model"
 	"net/http"
 )
@@ -21,7 +21,7 @@ func NewRapidClient(http *http.Client) RapidClient {
 }
 
 func (r rapidClient) FetchAllMovies() ([]model.Movie, error) {
-	url := config.RapidBaseURL + config.RapidPathURL
+	url := constants.RapidBaseURL + constants.RapidPathURL
 	resp, err := r.http.Get(url)
 	if err != nil {
 		fmt.Printf("failed to fetch all movies")

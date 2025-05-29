@@ -48,36 +48,6 @@ func (mr *MockMovieServiceMockRecorder) AddMovie() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddMovie", reflect.TypeOf((*MockMovieService)(nil).AddMovie))
 }
 
-// AddMovieToCart mocks base method.
-func (m *MockMovieService) AddMovieToCart(cart model.CartRequest) (int, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddMovieToCart", cart)
-	ret0, _ := ret[0].(int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// AddMovieToCart indicates an expected call of AddMovieToCart.
-func (mr *MockMovieServiceMockRecorder) AddMovieToCart(cart interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddMovieToCart", reflect.TypeOf((*MockMovieService)(nil).AddMovieToCart), cart)
-}
-
-// GetCartList mocks base method.
-func (m *MockMovieService) GetCartList(userId int) ([]model.CartResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCartList", userId)
-	ret0, _ := ret[0].([]model.CartResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetCartList indicates an expected call of GetCartList.
-func (mr *MockMovieServiceMockRecorder) GetCartList(userId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCartList", reflect.TypeOf((*MockMovieService)(nil).GetCartList), userId)
-}
-
 // GetFilteredMovies mocks base method.
 func (m *MockMovieService) GetFilteredMovies(searchType, searchText string) ([]model.Movie, error) {
 	m.ctrl.T.Helper()
@@ -93,19 +63,19 @@ func (mr *MockMovieServiceMockRecorder) GetFilteredMovies(searchType, searchText
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFilteredMovies", reflect.TypeOf((*MockMovieService)(nil).GetFilteredMovies), searchType, searchText)
 }
 
-// GetMovieDetailsBy mocks base method.
-func (m *MockMovieService) GetMovieDetailsBy(movieId int) (model.Movie, error) {
+// GetMovieBy mocks base method.
+func (m *MockMovieService) GetMovieBy(movieId int) (model.Movie, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMovieDetailsBy", movieId)
+	ret := m.ctrl.Call(m, "GetMovieBy", movieId)
 	ret0, _ := ret[0].(model.Movie)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetMovieDetailsBy indicates an expected call of GetMovieDetailsBy.
-func (mr *MockMovieServiceMockRecorder) GetMovieDetailsBy(movieId interface{}) *gomock.Call {
+// GetMovieBy indicates an expected call of GetMovieBy.
+func (mr *MockMovieServiceMockRecorder) GetMovieBy(movieId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMovieDetailsBy", reflect.TypeOf((*MockMovieService)(nil).GetMovieDetailsBy), movieId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMovieBy", reflect.TypeOf((*MockMovieService)(nil).GetMovieBy), movieId)
 }
 
 // GetMovies mocks base method.

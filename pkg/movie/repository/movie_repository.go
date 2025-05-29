@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"log"
+	model2 "movie-rent/pkg/cart/model"
 	"movie-rent/pkg/movie/model"
 )
 
@@ -20,11 +21,9 @@ type MovieRepository interface {
 	Save(movie model.Movie) error
 	SaveAll(movies []model.Movie) error
 	GetMovies() ([]model.Movie, error)
-	GetMovieDetailsBy(movieId int) (model.Movie, error)
+	GetMovieBy(movieId int) (model.Movie, error)
 	FetchMoviesByYear(year int) ([]model.Movie, error)
 	FetchMoviesBySearchText(searchType string, searchText string) ([]model.Movie, error)
-	AddMovieToCart(cart model.CartRequest) (int, error)
-	GetCartList(userId int) ([]model.CartResponse, error)
 }
 
 type movieRepo struct {
@@ -120,39 +119,7 @@ func (m movieRepo) FetchMoviesBySearchText(searchType string, searchText string)
 	return movies, nil
 }
 
-func (m movieRepo) AddMovieToCart(cart model.CartRequest) (int, error) {
-	id := cart.MovieId
-	err := m.db.QueryRow(InsertCartDetailsSQL, cart.UserId, cart.MovieId, cart.MovieName, cart.ReleaseYear).Scan(&id)
-
-	if err != nil {
-		return 0, fmt.Errorf("failed to insert cart details: %w", err)
-	}
-	fmt.Println("Successfully inserted cart details. Id:", id)
-	return id, nil
-}
-
-func (m movieRepo) GetCartList(userId int) ([]model.CartResponse, error) {
-	rows, err := m.db.Query(SelectCartListSQL, userId)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer rows.Close()
-
-	var cartList []model.CartResponse
-	for rows.Next() {
-		var c model.CartResponse
-		err := rows.Scan(&c.Id, &c.UserId, &c.MovieId, &c.MovieName, &c.ReleaseYear)
-		if err != nil {
-			log.Println("Error scanning row:", err)
-		}
-		cartList = append(cartList, c)
-	}
-
-	fmt.Println("Successfully fetched added movies", len(cartList))
-	return cartList, nil
-}
-
-func (m movieRepo) GetMovieDetailsBy(movieId int) (model.Movie, error) {
+func (m movieRepo) GetMovieBy(movieId int) (model.Movie, error) {
 	rows, err := m.db.Query(SelectMovieByIdSQL, movieId)
 	if err != nil {
 		log.Fatal(err)
@@ -161,7 +128,7 @@ func (m movieRepo) GetMovieDetailsBy(movieId int) (model.Movie, error) {
 
 	var movie model.Movie
 	for rows.Next() {
-		var c model.CartResponse
+		var c model2.CartResponse
 		err := rows.Scan(&c.Id, &c.UserId, &c.MovieId, &c.MovieName, &c.ReleaseYear)
 		if err != nil {
 			fmt.Println("Error scanning row:", err)
